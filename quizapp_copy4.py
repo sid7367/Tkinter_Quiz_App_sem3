@@ -134,21 +134,6 @@ def start_quiz(category, num_questions):
         feedback_label.config(text="No questions available for this category.", fg="red")
         return
 
-    # def navigate_to_question(event):
-    #     selected_index = int(question_listbox.curselection()[0])
-    #     load_question(selected_index)
-
-    # # Create a listbox for question navigation
-    # question_listbox = tk.Listbox(root, height=5, font=option_font, bg="#f0f8ff")
-    # question_listbox.pack(pady=10)
-
-    # # Populate the listbox with question numbers
-    # for i in range(len(questions)):
-    #     question_listbox.insert(tk.END, f"Question {i + 1}")
-
-    # # Bind the listbox selection to the navigate_to_question function
-    # question_listbox.bind("<<ListboxSelect>>", navigate_to_question)
-
     def load_question(index):
         if 0 <= index < len(questions):
             question_data = questions[index]
@@ -173,7 +158,8 @@ def start_quiz(category, num_questions):
 
     def submit_answer():
         global score, correct_count, incorrect_count
-        selected_option = var.get()
+        #var object accessing get() function of the StringVar class 👇
+        selected_option = var.get()  
         correct_answer = questions[question_index][5]
 
         if selected_option == correct_answer:
@@ -210,7 +196,7 @@ def start_quiz(category, num_questions):
         if question_index > 0:
             question_index -= 1
             load_question(question_index)
-            submit_button.config(state=tk.NORMAL)
+            submit_button.config(state=tk.DISABLED)
         else:
             feedback_label.config(text="You are on the first question.", fg="blue")
 
@@ -323,6 +309,7 @@ def start_quiz(category, num_questions):
     question_label = tk.Label(root, text="", font=question_font)
     question_label.pack(pady=(20, 20))
 
+    # StringVar is a class, var is an object of that class 
     var = tk.StringVar(value="None of the options... Select one")
     option_frame = tk.Frame(root, bg="#f0f8ff")
     option_frame.pack()
@@ -353,7 +340,7 @@ def start_quiz(category, num_questions):
     back_button = tk.Button(root, text="Go Back", command=previous_question, font=button_font, bg="#4682b4", fg="white")
     back_button.pack(side="left", padx=20, pady=10)
 
-    generate_report_button = tk.Button(root, text="Download Report", command=generate_report, font=button_font, bg="#00CED1", fg="white")
+    generate_report_button = tk.Button(root, text="Get Report", command=generate_report, font=button_font, bg="#00CED1", fg="white")
     generate_report_button.pack_forget()  # Initially hidden until quiz is completed
     
     load_question(question_index)
