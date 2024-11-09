@@ -24,9 +24,6 @@ VALUES
     ("Who wrote 'To Kill a Mockingbird'?", "Harper Lee", "Mark Twain", "J.K. Rowling", "Ernest Hemingway", "Harper Lee", "Literature"),
     ("Which element has the chemical symbol 'O'?", "Gold", "Oxygen", "Osmium", "Oganesson", "Oxygen", "Science");
 
-describe questions;
-select * from questions;
-
 INSERT INTO questions (question_text, option1, option2, option3, option4, correct_answer, category)
 VALUES 
 	-- adding geography questions 
