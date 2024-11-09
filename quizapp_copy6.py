@@ -303,7 +303,7 @@ def start_quiz(category, num_questions):
         pdf.ln(10)
 
         #Add a table for options selected by user & correct answers
-        pdf.set_font("Arial", "B", 12)
+        pdf.set_font("Arial", "BU", 12)
         pdf.cell(0, 10, txt="Question-wise Analysis", ln=True, align="C")
         pdf.ln(5)
         
