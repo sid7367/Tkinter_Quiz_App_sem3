@@ -12,7 +12,6 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 from tkinter import messagebox
-from PIL import Image, ImageTk
 from dotenv import load_dotenv
 import emoji
 
@@ -182,12 +181,6 @@ def start_quiz(category, num_questions):
             next_button.config(state=tk.DISABLED)
             back_button.config(state=tk.DISABLED)
             generate_report_button.pack()  # Show the report generation button
-
-    #     # Function to handle keyboard input and update selected_option
-    # def select_option_by_key(event):
-    #     key_pressed = event.char
-    #     if key_pressed in ['1', '2', '3', '4']:  # Assuming options are 1 to 4
-    #         var.set(key_pressed)
 
     def submit_answer():
         global score, correct_count, incorrect_count, options_selected
