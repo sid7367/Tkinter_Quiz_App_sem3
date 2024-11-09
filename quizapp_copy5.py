@@ -15,6 +15,7 @@ from email import encoders
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from dotenv import load_dotenv
+import emoji
 
 load_dotenv()
 
@@ -112,10 +113,28 @@ Quiz App Team
         server.sendmail(from_email, to_email, msg.as_string())
         server.quit()
 
-        feedback_label.config(text="Report sent successfully!", fg="green")
+        feedback_label.config(text="Report sent successfully!", fg="Blue")
 
     except Exception as e:
         feedback_label.config(text=f"Failed to send email: {str(e)}", fg="red")
+
+
+# Gradient creation function
+def create_gradient(canvas, width, height, color1, color2):
+    # Create a vertical gradient (light pink to white)
+    for i in range(height):
+        # Calculate the intermediate color for each pixel row
+        r1, g1, b1 = canvas.winfo_rgb(color1)
+        r2, g2, b2 = canvas.winfo_rgb(color2)
+        r = int(r1 + (r2 - r1) * i / height)
+        g = int(g1 + (g2 - g1) * i / height)
+        b = int(b1 + (b2 - b1) * i / height)
+        
+        # Set the color to hex
+        color = f'#{r:02x}{g:02x}{b:02x}'
+        
+        # Draw a line for the gradient
+        canvas.create_line(0, i, width, i, fill=color, width=1)
 
 
 # Function to start the quiz and load questions
@@ -150,7 +169,7 @@ def start_quiz(category, num_questions):
             score_label.config(text=f"Score: {score}/{len(questions)}")
 
         else:
-            feedback_label.config(text=f"Quiz completed! Your score: {score}/{len(questions)}", fg="green")
+            feedback_label.config(text=f"Quiz completed! Your score: {score}/{len(questions)}", fg="Blue")
             score_label.config(text=f"Final Score: {score}/{len(questions)}")
             submit_button.config(state=tk.DISABLED)
             next_button.config(state=tk.DISABLED)
@@ -166,7 +185,7 @@ def start_quiz(category, num_questions):
         if selected_option == correct_answer:
             score += 1
             correct_count += 1
-            feedback_label.config(text="Correct!", fg="green")
+            feedback_label.config(text="Correct!", fg="Blue")
         else:
             incorrect_count += 1
             feedback_label.config(text=f"Incorrect! The correct answer is: {correct_answer}", fg="red")
@@ -184,7 +203,7 @@ def start_quiz(category, num_questions):
             load_question(question_index)
             submit_button.config(state=tk.NORMAL)
         else:
-            feedback_label.config(text=f"Quiz completed! Your score: {score}/{len(questions)}", fg="green")
+            feedback_label.config(text=f"Quiz completed! Your score: {score}/{len(questions)}", fg="Blue")
             score_label.config(text=f"Final Score: {score}/{len(questions)}")
             submit_button.config(state=tk.DISABLED)
             next_button.config(state=tk.DISABLED)
@@ -279,6 +298,7 @@ def start_quiz(category, num_questions):
         pdf.image(chart_path, x=10, y=pdf.get_y(), w=90)
         pdf.output(report_path)
         
+        #deleting the png of pie chart
         if os.path.exists(chart_path):
             os.remove(chart_path)
 
@@ -299,29 +319,26 @@ def start_quiz(category, num_questions):
         
     root = tk.Tk()
     root.title("Quiz App")
-    root.geometry("500x500")
-    root.configure(bg="lightblue")
-    
-            # Load an image using Pillow
-    # image_path = "C:\\Users\\user\\pythonvscode\\Python_project\\quiz_app-bg.png"  # Replace with your image file path
-    # image = Image.open(image_path)
-    # image = image.resize((500, 500))  # Adjust dimensions as needed
-    # photo = ImageTk.PhotoImage(image)
-    # # Create a label to display the image
-    # image_label = tk.Label(root, image=photo)
-    # image_label.pack()  # You can use .pack(), .grid(), or .place() to position the label
+    root.geometry("1920x1118")
+    # root.configure(bg="lightblue")
+    # Create a canvas for the gradient background
+    canvas = tk.Canvas(root, width=1920, height=1118)
+    canvas.pack(fill="both", expand=True)
 
+    # Call the create_gradient function to create the gradient effect
+    create_gradient(canvas, 1920, 1118, "#FFB6C1", "#FFFFFF")  # Light pink to white gradient
+    
     title_font = font.Font(family="Helvetica", size=16, weight="bold")
     question_font = font.Font(family="Arial", size=14)
     option_font = font.Font(family="Arial", size=12)
     button_font = font.Font(family="Arial", size=12, weight="bold")
 
-    question_label = tk.Label(root, text="", font=question_font)
+    question_label = tk.Label(canvas, text="", font=question_font)
     question_label.pack(pady=(20, 20))
 
     # StringVar is a class, var is an object of that class 
     var = tk.StringVar(value="None of the options... Select one")
-    option_frame = tk.Frame(root, bg="#f0f8ff")
+    option_frame = tk.Frame(canvas, bg="#f0f8ff")
     option_frame.pack()
 
     option1_radio = tk.Radiobutton(option_frame, variable=var, font=option_font, text="", bg="#f0f8ff", activebackground="#f0f8ff")
@@ -334,23 +351,23 @@ def start_quiz(category, num_questions):
     option3_radio.pack(anchor="w", pady=5)
     option4_radio.pack(anchor="w", pady=5)
 
-    feedback_label = tk.Label(root, text="", font=button_font, bg="lightblue")
+    feedback_label = tk.Label(canvas, text="", font=button_font, bg="#ffc6cf")
     feedback_label.pack(pady=10)
 
     # Create a label to display the current score
-    score_label = tk.Label(root, text=f"Score: {score}/{len(questions)}", font=button_font, bg="lightblue")
+    score_label = tk.Label(canvas, text=f"Score: {score}/{len(questions)}", font=button_font, bg="#ffc9d1")
     score_label.pack(pady=10)
 
-    submit_button = tk.Button(root, text="Submit", command=submit_answer, font=button_font, bg="#ffa07a", fg="white")
+    submit_button = tk.Button(canvas, text="Submit", command=submit_answer, font=button_font, bg="#ffa07a", fg="white")
     submit_button.pack(pady=10)
 
-    next_button = tk.Button(root, text="Next", command=next_question, font=button_font, bg="#4682b4", fg="white")
+    next_button = tk.Button(canvas, text="Next", command=next_question, font=button_font, bg="#4682b4", fg="white")
     next_button.pack(side="right", padx=20, pady=10)
 
-    back_button = tk.Button(root, text="Go Back", command=previous_question, font=button_font, bg="#4682b4", fg="white")
+    back_button = tk.Button(canvas, text="Go Back", command=previous_question, font=button_font, bg="#4682b4", fg="white")
     back_button.pack(side="left", padx=20, pady=10)
 
-    generate_report_button = tk.Button(root, text="Get Report", command=generate_report, font=button_font, bg="#00CED1", fg="white")
+    generate_report_button = tk.Button(canvas, text="Get Report", command=generate_report, font=button_font, bg="#00CED1", fg="white")
     generate_report_button.pack_forget()  # Initially hidden until quiz is completed
     
     load_question(question_index)
@@ -399,5 +416,33 @@ def select_category():
 
     category_window.mainloop()
 
-select_category()
+# select_category()
+
+def display_instructions():
+    instructions_window = tk.Tk()
+    instructions_window.title("Quiz Instructions")
+    instructions_window.geometry("1059x873")
+    instructions_window.configure(bg="#C9E9D2")
+
+    instructions_label = tk.Label(instructions_window, text=emoji.emojize("""
+    Welcome to the Quiz App!:party_popper:
+
+    Please read the instructions carefully before starting :scroll:
+    
+    1. Select a category from the list. :books:
+    2. Choose the number of questions you'd like to attempt. :input_numbers:
+    3. Answer the questions and get feedback on each answer. :check_mark_button:
+    4. At the end of the quiz, you will be able to generate a report with your score. :bar_chart:
+    5. You can also receive the report via email. :envelope_with_arrow:
+    
+    All the Best :thumbs_up: , and enjoy the quiz! :four_leaf_clover:"""),font=("Segoe UI Emoji", 12), bg="#f5f5f5",justify="left")
+    instructions_label.pack(pady=20, padx=10)
+
+    # Start Quiz Button
+    start_button = tk.Button(instructions_window, text="Start Quiz", font=("Arial", 14), bg="#00CED1", fg="white", command=lambda: [instructions_window.destroy(), select_category()])
+    start_button.pack(pady=20)
+
+    instructions_window.mainloop()
+
+display_instructions()
 conn.close()
