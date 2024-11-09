@@ -139,12 +139,13 @@ def create_gradient(canvas, width, height, color1, color2):
 
 # Function to start the quiz and load questions
 def start_quiz(category, num_questions):
-    global question_index, score, correct_count, incorrect_count, start_time,end_time
+    global question_index, score, correct_count, incorrect_count, start_time,end_time,options_selected
     score = 0
     question_index = 0
     correct_count = 0
     incorrect_count = 0
     start_time = time.strftime("%Y-%m-%d %H:%M:%S")  # Record the quiz start time
+    options_selected = dict()  # Dictionary to store the selected options for each question
 
     questions = get_questions(category, num_questions)
 
@@ -154,7 +155,9 @@ def start_quiz(category, num_questions):
         feedback_label.config(text="No questions available for this category.", fg="red")
         return
 
-    def load_question(index):
+    def load_question(index,selected_option=None):
+        global options_selected
+        var.set(selected_option)
         if 0 <= index < len(questions):
             question_data = questions[index]
             question_text, opt1, opt2, opt3, opt4, correct_ans = question_data
@@ -164,6 +167,11 @@ def start_quiz(category, num_questions):
             option3_radio.config(text=opt3, value=opt3)
             option4_radio.config(text=opt4, value=opt4)
             feedback_label.config(text="")
+
+            if selected_option:
+                submit_button.config(state=tk.DISABLED)
+            else:
+                submit_button.config(state=tk.NORMAL)
 
         # Update the score label on each question load
             score_label.config(text=f"Score: {score}/{len(questions)}")
@@ -177,10 +185,11 @@ def start_quiz(category, num_questions):
             generate_report_button.pack()  # Show the report generation button
 
     def submit_answer():
-        global score, correct_count, incorrect_count
+        global score, correct_count, incorrect_count, options_selected
         #var object accessing get() function of the StringVar class 👇
         selected_option = var.get()  
         correct_answer = questions[question_index][5]
+        options_selected[question_index]=selected_option
 
         if selected_option == correct_answer:
             score += 1
@@ -197,11 +206,12 @@ def start_quiz(category, num_questions):
         
 
     def next_question():
-        global question_index
+        global question_index, options_selected
         if question_index < len(questions) - 1:
             question_index += 1
-            load_question(question_index)
-            submit_button.config(state=tk.NORMAL)
+            selected_option = options_selected.get(question_index)
+            load_question(question_index, selected_option)
+            # submit_button.config(state=tk.NORMAL)
         else:
             feedback_label.config(text=f"Quiz completed! Your score: {score}/{len(questions)}", fg="Blue")
             score_label.config(text=f"Final Score: {score}/{len(questions)}")
@@ -212,11 +222,12 @@ def start_quiz(category, num_questions):
 
 
     def previous_question():
-        global question_index
+        global question_index, options_selected
         if question_index > 0:
             question_index -= 1
-            load_question(question_index)
-            submit_button.config(state=tk.DISABLED)
+            selected_option = options_selected.get(question_index)
+            load_question(question_index, selected_option)
+            # submit_button.config(state=tk.DISABLED)
         else:
             feedback_label.config(text="You are on the first question.", fg="blue")
 
@@ -290,6 +301,33 @@ def start_quiz(category, num_questions):
             # Create cells with the fill color
             pdf.cell(80, 10, txt=field, border=1, ln=0, fill=True)
             pdf.cell(110, 10, txt=str(detail), border=1, ln=1, fill=True)
+
+        # Adding a line break after the table 
+        pdf.ln(10)
+
+        #Add a table for options selected by user & correct answers
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(0, 10, txt="Question-wise Analysis", ln=True, align="C")
+        pdf.ln(5)
+        
+        # Set the font for the table headers
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(80, 10, txt="Question", border=1, align="C")
+        pdf.cell(50, 10, txt="Selected Option", border=1, align="C")
+        pdf.cell(50, 10, txt="Correct Answer", border=1, align="C")
+        pdf.ln(10)
+
+        # Set the font for the table content
+        pdf.set_font("Arial", "", 12)
+
+        for i, question in enumerate(questions):
+            question_text = question[0]
+            correct_answer = question[5]
+            selected_option = options_selected.get(i, "Not answered")
+            pdf.cell(80, 10, txt=question_text, border=1, align="L")
+            pdf.cell(50, 10, txt=selected_option, border=1, align="C")
+            pdf.cell(50, 10, txt=correct_answer, border=1, align="C")
+            pdf.ln(10)
 
         table_y = pdf.get_y()
         pdf.ln(30)  # Leave some space after the table
@@ -416,7 +454,6 @@ def select_category():
 
     category_window.mainloop()
 
-# select_category()
 
 def display_instructions():
     instructions_window = tk.Tk()
