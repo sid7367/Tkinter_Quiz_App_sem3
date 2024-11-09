@@ -1,4 +1,3 @@
-SHOW DATABASES;
 create database Quiz_Questions;
 
 -- Use the quiz_questions database
