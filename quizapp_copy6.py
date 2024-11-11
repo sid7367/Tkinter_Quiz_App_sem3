@@ -82,8 +82,8 @@ def send_email_with_report(to_email, report_path, feedback_label):
     subject = "Your Quiz Report"
     
     # Creating the email message
-    msg = MIMEMultipart()
-    msg['From'] = from_email
+    msg = MIMEMultipart()   
+    msg['From'] = from_email 
     msg['To'] = to_email
     msg['Subject'] = subject
 
